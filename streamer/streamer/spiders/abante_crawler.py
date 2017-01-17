@@ -21,8 +21,8 @@ class AbanteSpider(scrapy.Spider):
 			yield scrapy.Request(item_url,self.parseItem)
 
 		next_page =  response.xpath("//div[@class='page-nav td-pb-padding-side']//a[.='']/@href").extract()[1]
-		current = response.xpath("//div[@class='page-nav td-pb-padding-side']/span[@class='current']/text()").extract()
-		if current is not "5":
+		#current = response.xpath("//div[@class='page-nav td-pb-padding-side']/span[@class='current']/text()").extract()
+		if next_page is not None:
 		 	next_page = response.urljoin(next_page)
 		 	yield scrapy.Request(next_page, self.parse)
 
@@ -31,5 +31,5 @@ class AbanteSpider(scrapy.Spider):
 		item = StreamerItem()
 		item['title'] = response.xpath("//div[@class='td-post-header']/header[@class='td-post-title']//h1[@class='entry-title']/text()").extract()
 		item['content'] = response.xpath("//div[@class='td-post-content']//p/text()").extract()
-		item['category'] = 'National'
+		item['category'] = ''
 		yield item
