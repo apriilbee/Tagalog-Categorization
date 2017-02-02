@@ -10,7 +10,7 @@ class AbanteSpider(scrapy.Spider):
 	page_ctr = 1;
 
 	start_urls = [
-		'http://www.abante.com.ph/news/page/2',
+		'http://www.abante.com.ph/ent/page/2',
 	]
 
 	def parse(self, response):
@@ -31,5 +31,5 @@ class AbanteSpider(scrapy.Spider):
 		item = StreamerItem()
 		item['title'] = response.xpath("//div[@class='td-post-header']/header[@class='td-post-title']//h1[@class='entry-title']/text()").extract()
 		item['content'] = response.xpath("//div[@class='td-post-content']//p/text()").extract()
-		item['category'] = ''
+		item['category'] = 'E'
 		yield item
