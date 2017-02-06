@@ -1,5 +1,9 @@
 import re
 import sys
+import csv
+import enchant
+from nltk.corpus import stopwords
+
 
 infix = ['um', 'in'] ##list of infix
 prefix = ['makapang','nakapang','nakapan','makapan','nakapam','makapam','nakapag','makapag','nagpati','magpati','nagpaka','magpaka',
@@ -37,7 +41,7 @@ def strip_suffix(word):
 def strip_prefix(word):
     for pre in prefix:
         if (pre in word):
-            if(word.startswith(pre) and len(word) > 4):
+            if(word.startswith(pre) and len(word) > 5):
                 word = re.sub(pre,'',word,1)
 
         if word.startswith("-"):
@@ -45,7 +49,7 @@ def strip_prefix(word):
 
         # checks reduplication of vowel prefixes
         for char in vowel:
-            if(word.startswith(char)):
+            if(word.startswith(char) and len(word) > 1):
                 if(word[0] == word[1]):
                     word = word[1:]
 
@@ -61,7 +65,40 @@ def check_reduplication(word):
             break
     return word
 
+###
+
+def stem(document):
+    eng = enchant.Dict("en_US")
+    words = []
+    for word in document.split():
+        if eng.check(word):
+            words.append(word)
+        else:
+            words.append(check_reduplication(strip_prefix(strip_suffix(strip_infix(word.strip()).strip().strip()))))
+
+    doc = ' '.join(word for word in words)
+    return doc
+
+
 if __name__ == "__main__":
-    wordfile = open(sys.argv[1])
-    for word in wordfile.readlines():
-        print word,check_reduplication(strip_prefix(strip_suffix(strip_infix(word.strip()).strip().strip()))),"\n"
+    # wordfile = open(sys.argv[1])
+    # for word in wordfile.readlines():
+    #     print word,check_reduplication(strip_prefix(strip_suffix(strip_infix(word.strip()).strip().strip()))),"\n"
+    articles = []
+
+    with open('../data/no_stopwords.csv') as readfile, open('../data/stemmed_.csv','w') as writefile:
+        reader = csv.DictReader(readfile)
+
+        fieldnames = ['title', 'category','content']
+        writer = csv.DictWriter(writefile, fieldnames=fieldnames)
+
+        for row in reader:
+            articles.append(row)
+
+        writer.writeheader()
+        ctr = 0
+        for a in articles:
+            ar = a['content'].lower()
+            writer.writerow({'title':a['title'], 'category':a['category'],'content':stem(ar)})
+            print ctr
+            ctr += 1
