@@ -74,7 +74,9 @@ def stem(document):
         if eng.check(word):
             words.append(word)
         else:
-            words.append(check_reduplication(strip_prefix(strip_suffix(strip_infix(word.strip()).strip().strip()))))
+            #words.append(check_reduplication(strip_prefix(strip_suffix(strip_infix(word.strip()).strip().strip()))))
+            #words.append(check_reduplication(strip_suffix(strip_infix(strip_prefix(word.strip()).strip().strip()))))
+            words.append(check_reduplication(strip_infix(strip_prefix(strip_suffix(word.strip()).strip().strip()))))
 
     doc = ' '.join(word for word in words)
     return doc
@@ -86,7 +88,7 @@ if __name__ == "__main__":
     #     print word,check_reduplication(strip_prefix(strip_suffix(strip_infix(word.strip()).strip().strip()))),"\n"
     articles = []
 
-    with open('../data/no_stopwords.csv') as readfile, open('../data/stemmed_.csv','w') as writefile:
+    with open('../../data/no_stopwords.csv') as readfile, open('../../data/experiment3/stemmed_.csv','w') as writefile:
         reader = csv.DictReader(readfile)
 
         fieldnames = ['title', 'category','content']
